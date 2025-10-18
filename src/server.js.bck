@@ -1,0 +1,54 @@
+require('dotenv').config();
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware de sécurité
+app.use(helmet());
+
+// CORS
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'https://cyonix.eu',
+  credentials: true
+}));
+
+// Body parser - IMPORTANT: raw body AVANT json() pour Stripe webhooks
+app.use('/api/webhooks/stripe', express.raw({ type: 'application/json' }));
+
+// Puis JSON parser pour le reste
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// Routes
+const routes = require('./routes');
+app.use('/api', routes);
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Erreur serveur'
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route non trouvée'
+  });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 API ProCyberShield running on port ${PORT}`);
+  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+});
+
+module.exports = app;
