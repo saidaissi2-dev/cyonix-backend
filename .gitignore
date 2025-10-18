@@ -1,0 +1,32 @@
+node_modules/
+.env
+.env.*
+*.log
+.DS_Store
+*.backup*
+logs/
+
+# PKI & Certificates (CRITICAL)
+*.key
+*.crt
+*.pem
+*.p12
+*.pfx
+*.csr
+pki/
+easy-rsa/
+certificates/
+
+# Database
+*.sqlite
+*.db
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
